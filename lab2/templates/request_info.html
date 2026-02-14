@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 class="mb-4">Информация о запросе</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+
+            <!-- Блок с формой авторизации -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    Форма авторизации
+                </div>
+                <div class="card-body">
+                    <!-- Форма отправляет данные на этот же URL -->
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Пароль</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Отправить</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Блок отображения параметров формы -->
+            <div class="card mb-4 border-success">
+                <div class="card-header bg-success text-white">
+                    Параметры формы
+                </div>
+                <div class="card-body">
+                    {% if form_params %}
+                        <ul class="list-group list-group-flush">
+                            {% for key, value in form_params.items() %}
+                                <li class="list-group-item">
+                                    <strong>{{ key }}:</strong> {{ value }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">Форма еще не отправлена.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Блок URL параметров -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Параметры URL
+                </div>
+                <div class="card-body">
+                    {% if url_params %}
+                        <ul class="list-group list-group-flush">
+                            {% for key, value in url_params.items() %}
+                                <li class="list-group-item">
+                                    <strong>{{ key }}:</strong> {{ value }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">Нет параметров (добавьте ?test=123 к ссылке)</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+
+            <!-- Cookies -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Cookies
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for key, value in cookies.items() %}
+                            <li class="list-group-item">
+                                <strong>{{ key }}:</strong> {{ value }}
+                            </li>
+                        {% else %}
+                            <li class="list-group-item text-muted">Куки отсутствуют</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Headers -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Заголовки запроса (Headers)
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    <ul class="list-group list-group-flush">
+                        {% for key, value in headers %}
+                            <li class="list-group-item" style="font-size: 0.9em;">
+                                <strong>{{ key }}:</strong> <br> {{ value }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

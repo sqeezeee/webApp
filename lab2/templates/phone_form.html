@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Проверка номера телефона</h2>
+
+    {% if success %}
+        <div class="alert alert-success">
+            <h4>Успешно!</h4>
+            <p>Отформатированный номер:</p>
+            <p class="display-6">{{ success }}</p>
+            <a href="/phone" class="btn btn-outline-success">Проверить другой</a>
+        </div>
+    {% else %}
+        <form method="POST" action="/phone" class="w-50" novalidate>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Введите номер телефона</label>
+                
+                <!-- 
+                     Добавляем класс 'is-invalid', если переменная error существует.
+                     Атрибут value сохраняет введенное пользователем значение (phone_value).
+                -->
+                <input type="text" 
+                       class="form-control {% if error %}is-invalid{% endif %}" 
+                       name="phone" 
+                       id="phone" 
+                       value="{{ phone_value }}"
+                       placeholder="+7 (999) 000-00-00">
+                
+                <!-- Блок для вывода ошибки Bootstrap -->
+                <div class="invalid-feedback">
+                    {{ error }}
+                </div>
+                
+                <div class="form-text">
+                    Допустимы цифры, пробелы, скобки, тире, точки и знак «+».
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Проверить</button>
+        </form>
+    {% endif %}
+{% endblock %}
