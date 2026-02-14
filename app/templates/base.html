@@ -17,7 +17,8 @@
         {% endif %}
     </title>
   </head>
-  <body>
+  <!-- d-flex и flex-column, чтобы футер прижимался к низу -->
+  <body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
@@ -49,6 +50,15 @@
             {% endblock %}
         </div>
     </main>
+
+    <!-- Задание 2: Подвал сайта -->
+    <footer class="footer mt-auto py-3 bg-light text-center border-top">
+        <div class="container">
+            <span class="text-muted">
+                Набиуллин Артур Фанилевич, группа 241-326
+            </span>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='main.js') }}" defer></script>
