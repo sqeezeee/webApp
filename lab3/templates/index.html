@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">Добро пожаловать!</h1>
+        <p class="lead">Лабораторная работа №3. Реализация аутентификации пользователей.</p>
+        <hr class="my-4">
+        <p>Используйте меню сверху для навигации.</p>
+        {% if not current_user.is_authenticated %}
+            <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Войти</a>
+        {% endif %}
+    </div>
+{% endblock %}

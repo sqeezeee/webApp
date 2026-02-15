@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="card text-center mt-5">
+        <div class="card-header">
+            Глобальная сессия
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Счётчик посещений этой страницы</h5>
+            <p class="card-text display-1 fw-bold text-primary">{{ visits }}</p>
+            <p class="text-muted">Обновите страницу, чтобы увеличить значение.</p>
+        </div>
+        <div class="card-footer text-muted">
+            Значение хранится в cookie браузера
+        </div>
+    </div>
+{% endblock %}
