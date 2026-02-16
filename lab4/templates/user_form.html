@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_user_form %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-4">{{ 'Редактирование' if is_edit else 'Создание' }} пользователя</h2>
+        
+        {% if is_edit %}
+            {{ render_user_form(url_for('user_edit', user_id=user.id), roles, form_data, errors, is_edit=True) }}
+        {% else %}
+            {{ render_user_form(url_for('user_create'), roles, form_data, errors, is_edit=False) }}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
