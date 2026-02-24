@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Активность пользователей</h1>
+    <a href="{{ url_for('logs.index') }}" class="btn btn-secondary">Назад к журналу</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>№</th>
+            <th>Пользователь</th>
+            <th>Количество посещений</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in stats %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>
+                <!-- row[2] - это объект User -->
+                {% if row[2] %}
+                    {{ row[2].full_name }}
+                {% else %}
+                    <span class="text-muted">Неаутентифицированный пользователь</span>
+                {% endif %}
+            </td>
+            <td>{{ row[1] }}</td> <!-- row[1] - объект count -->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('logs.export_csv', type='users') }}" class="btn btn-success mt-3">Экспорт в CSV</a>
+{% endblock %}

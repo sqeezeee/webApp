@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Журнал посещений</h1>
+    
+    {% if current_user.is_admin %}
+        <div>
+            <a href="{{ url_for('logs.stats_pages') }}" class="btn btn-outline-primary">Статистика по страницам</a>
+            <a href="{{ url_for('logs.stats_users') }}" class="btn btn-outline-primary">Статистика по пользователям</a>
+        </div>
+    {% endif %}
+</div>
+
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>№</th>
+            <th>Пользователь</th>
+            <th>Страница</th>
+            <th>Дата</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in pagination.items %}
+        <tr>
+            <!-- Подсчет номера с учетом страницы -->
+            <td>{{ (pagination.page - 1) * pagination.per_page + loop.index }}</td>
+            <td>
+                {% if log.user %}
+                    {{ log.user.full_name }}
+                {% else %}
+                    <span class="text-muted">Неаутентифицированный пользователь</span>
+                {% endif %}
+            </td>
+            <td>{{ log.path }}</td>
+            <td>{{ log.created_at.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Пагинация -->
+<nav>
+  <ul class="pagination justify-content-center">
+    {% if pagination.has_prev %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('logs.index', page=pagination.prev_num) }}">Назад</a></li>
+    {% else %}
+        <li class="page-item disabled"><span class="page-link">Назад</span></li>
+    {% endif %}
+
+    <li class="page-item active"><span class="page-link">{{ pagination.page }}</span></li>
+
+    {% if pagination.has_next %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('logs.index', page=pagination.next_num) }}">Вперед</a></li>
+    {% else %}
+        <li class="page-item disabled"><span class="page-link">Вперед</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endblock %}

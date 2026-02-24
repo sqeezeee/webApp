@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Посещаемость страниц</h1>
+    <a href="{{ url_for('logs.index') }}" class="btn btn-secondary">Назад к журналу</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>№</th>
+            <th>Страница</th>
+            <th>Количество посещений</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in stats %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row.path }}</td>
+            <td>{{ row.count }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('logs.export_csv', type='pages') }}" class="btn btn-success mt-3">Экспорт в CSV</a>
+{% endblock %}

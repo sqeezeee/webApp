@@ -6,8 +6,11 @@
     <div class="col-md-8">
         <h2 class="mb-4">{{ 'Редактирование' if is_edit else 'Создание' }} пользователя</h2>
         
+        <!-- Логика отключения поля Роль: если это редактирование и пользователь не админ -->
+        {% set disable_role = is_edit and not current_user.is_admin %}
+
         {% if is_edit %}
-            {{ render_user_form(url_for('user_edit', user_id=user.id), roles, form_data, errors, is_edit=True) }}
+            {{ render_user_form(url_for('user_edit', user_id=user.id), roles, form_data, errors, is_edit=True, disable_role=disable_role) }}
         {% else %}
             {{ render_user_form(url_for('user_create'), roles, form_data, errors, is_edit=False) }}
         {% endif %}

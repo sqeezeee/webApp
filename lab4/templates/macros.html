@@ -1,12 +1,12 @@
-{% macro render_user_form(action_url, roles, form_data, errors, is_edit=False) %}
+{% macro render_user_form(action_url, roles, form_data, errors, is_edit=False, disable_role=False) %}
 <form method="POST" action="{{ action_url }}" novalidate>
-    
+
     <!-- Секция логина и пароля (только при создании) -->
     {% if not is_edit %}
     <div class="mb-3">
         <label class="form-label">Логин <span class="text-danger">*</span></label>
-        <input type="text" name="login" 
-               class="form-control {{ 'is-invalid' if errors.get('login') }}" 
+        <input type="text" name="login"
+               class="form-control {{ 'is-invalid' if errors.get('login') }}"
                value="{{ form_data.get('login', '') }}">
         <div class="invalid-feedback">{{ errors.get('login') }}</div>
         <div class="form-text">Латинские буквы и цифры, мин. 5 символов.</div>
@@ -14,7 +14,7 @@
 
     <div class="mb-3">
         <label class="form-label">Пароль <span class="text-danger">*</span></label>
-        <input type="password" name="password" 
+        <input type="password" name="password"
                class="form-control {{ 'is-invalid' if errors.get('password') }}">
         <div class="invalid-feedback">{{ errors.get('password') }}</div>
         <div class="form-text">8-128 симв., заглавная, строчная, цифра.</div>
@@ -24,16 +24,16 @@
     <!-- Общие поля -->
     <div class="mb-3">
         <label class="form-label">Фамилия <span class="text-danger">*</span></label>
-        <input type="text" name="last_name" 
-               class="form-control {{ 'is-invalid' if errors.get('last_name') }}" 
+        <input type="text" name="last_name"
+               class="form-control {{ 'is-invalid' if errors.get('last_name') }}"
                value="{{ form_data.get('last_name', '') }}">
         <div class="invalid-feedback">{{ errors.get('last_name') }}</div>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Имя <span class="text-danger">*</span></label>
-        <input type="text" name="first_name" 
-               class="form-control {{ 'is-invalid' if errors.get('first_name') }}" 
+        <input type="text" name="first_name"
+               class="form-control {{ 'is-invalid' if errors.get('first_name') }}"
                value="{{ form_data.get('first_name', '') }}">
         <div class="invalid-feedback">{{ errors.get('first_name') }}</div>
     </div>
@@ -41,17 +41,18 @@
     <div class="mb-3">
         <label class="form-label">Отчество</label>
         <!-- Отчество без звездочки, оно необязательно -->
-        <input type="text" name="middle_name" class="form-control" 
+        <input type="text" name="middle_name" class="form-control"
                value="{{ form_data.get('middle_name', '') }}">
     </div>
 
     <div class="mb-3">
         <label class="form-label">Роль</label>
-        <select name="role_id" class="form-select">
+        <!-- Если disable_role=True, поле отключается. -->
+        <select name="role_id" class="form-select" {{ 'disabled' if disable_role }}>
             <option value="">-- Без роли --</option>
             {% for role in roles %}
                 <!-- Если id совпадает, выбираем этот пункт -->
-                <option value="{{ role.id }}" 
+                <option value="{{ role.id }}"
                     {% if form_data.get('role_id')|string == role.id|string %}selected{% endif %}>
                     {{ role.name }}
                 </option>

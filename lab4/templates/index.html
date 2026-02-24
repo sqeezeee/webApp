@@ -28,14 +28,18 @@
                     {% endif %}
                 </td>
                 <td>
-                    <!-- Кнопка Просмотр (всем) -->
-                    <a href="{{ url_for('user_view', user_id=user.id) }}" class="btn btn-sm btn-primary">Просмотр</a>
+                    <!-- Просмотр: доступен админу или самому пользователю -->
+                    {% if can_user_perform('show', user) %}
+                        <a href="{{ url_for('user_view', user_id=user.id) }}" class="btn btn-sm btn-primary">Просмотр</a>
+                    {% endif %}
 
-                    <!-- Кнопки только для вошедших -->
-                    {% if current_user.is_authenticated %}
+                    <!-- Редактирование: админ или сам пользователь -->
+                    {% if can_user_perform('edit', user) %}
                         <a href="{{ url_for('user_edit', user_id=user.id) }}" class="btn btn-sm btn-warning">Редактирование</a>
+                    {% endif %}
 
-                        <!-- Кнопка вызывает модальное окно -->
+                    <!-- Удаление: только админ -->
+                    {% if can_user_perform('delete', user) %}
                         <button type="button" class="btn btn-sm btn-danger"
                                 data-bs-toggle="modal" data-bs-target="#deleteModal"
                                 data-userid="{{ user.id }}" data-username="{{ user.full_name }}">
@@ -49,7 +53,8 @@
     </table>
 </div>
 
-{% if current_user.is_authenticated %}
+<!-- Создание: только админ -->
+{% if can_user_perform('create') %}
     <a href="{{ url_for('user_create') }}" class="btn btn-success mt-3">Создание пользователя</a>
 {% endif %}
 
@@ -81,24 +86,19 @@
     // Находим DOM-элемент модального окна по его ID ('deleteModal')
     var deleteModal = document.getElementById('deleteModal')
     deleteModal.addEventListener('show.bs.modal', function (event) {
-
-    // event.relatedTarget — это элемент, который вызвал открытие окна, при нажатии кнопки "Удалить" пользователем
-    var button = event.relatedTarget
-
-    var userId = button.getAttribute('data-userid')
-    var userName = button.getAttribute('data-username')
-
-    // Находим внутри модального окна элемент <span>, куда нужно вписать имя,
-    // и форму <form>, которую нужно будет отправить.
-    var modalNameSpan = deleteModal.querySelector('#modalUserName')
-    var deleteForm = deleteModal.querySelector('#deleteForm')
-
-    // Вставляем имя пользователя в текст вопроса
-    modalNameSpan.textContent = userName
-
-    // Динамически меняем атрибут action у формы.
-    // Форма будет отправлять POST-запрос на адрес конкретного пользователя.
-    deleteForm.action = '/users/' + userId + '/delete'
-})
+        // event.relatedTarget — это элемент, который вызвал открытие окна, при нажатии кнопки "Удалить" пользователем
+        var button = event.relatedTarget
+        var userId = button.getAttribute('data-userid')
+        var userName = button.getAttribute('data-username')
+        // Находим внутри модального окна элемент <span>, куда нужно вписать имя,
+        // и форму <form>, которую нужно будет отправить.
+        var modalNameSpan = deleteModal.querySelector('#modalUserName')
+        var deleteForm = deleteModal.querySelector('#deleteForm')
+        // Вставляем имя пользователя в текст вопроса
+        modalNameSpan.textContent = userName
+        // Динамически меняем атрибут action у формы.
+        // Форма будет отправлять POST-запрос на адрес конкретного пользователя.
+        deleteForm.action = '/users/' + userId + '/delete'
+    })
 </script>
 {% endblock %}
