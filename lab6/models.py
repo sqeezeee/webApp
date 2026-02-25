@@ -1,18 +1,17 @@
 import os
-from typing import Optional, Union, List
+from typing import Optional, List
 from datetime import datetime
-import sqlalchemy as sa
+# Импортируем func для подсчета (если понадобится в будущем)
+from sqlalchemy import String, ForeignKey, DateTime, Text, Integer, MetaData
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin
 from flask import url_for
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey, DateTime, Text, Integer, MetaData
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
-  metadata = MetaData(naming_convention={
+    metadata = MetaData(naming_convention={
         "ix": 'ix_%(column_0_label)s',
         "uq": "uq_%(table_name)s_%(column_0_name)s",
         "ck": "ck_%(table_name)s_%(constraint_name)s",
@@ -75,6 +74,9 @@ class Course(Base):
     category: Mapped["Category"] = relationship(lazy=False)
     bg_image: Mapped["Image"] = relationship()
 
+    # Связь с отзывами. cascade="all, delete-orphan" удалит отзывы, если удалить курс
+    reviews: Mapped[List["Review"]] = relationship(back_populates="course", cascade="all, delete-orphan")
+
     def __repr__(self):
         return '<Course %r>' % self.name
 
@@ -83,6 +85,32 @@ class Course(Base):
         if self.rating_num > 0:
             return self.rating_sum / self.rating_num
         return 0
+
+
+# Модель Review
+class Review(Base):
+    __tablename__ = 'reviews'
+
+    # Первичный ключ
+    id: Mapped[int] = mapped_column(primary_key=True)
+    # Оценка (0-5)
+    rating: Mapped[int] = mapped_column(Integer, nullable=False)
+    # Текст отзыва
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    # Дата создания
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    # Внешний ключ на курс
+    course_id: Mapped[int] = mapped_column(ForeignKey("courses.id"))
+    # Внешний ключ на пользователя (автора отзыва)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+
+    # Связи для доступа к объектам курса и пользователя
+    course: Mapped["Course"] = relationship(back_populates="reviews")
+    user: Mapped["User"] = relationship()
+
+    def __repr__(self):
+        return '<Review %r>' % self.id
+
 
 class Image(db.Model):
     __tablename__ = 'images'

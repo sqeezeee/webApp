@@ -6,7 +6,8 @@
         <div class="m-auto">
             <h1 class="title mb-3 font-weight-bold">{{ course.name }}</h1>
             <p class="mb-3 mx-auto">
-                {{ course.category.name }} | <span>★</span> <span>{{ "%.2f" | format(course.rating) }}</span>
+                {{ course.category.name }} | <span class="text-warning">★</span> <span>{{ "%.2f" | format(course.rating) }}</span>
+                <span class="text-muted">({{ course.rating_num }} отзывов)</span>
             </p>
             <div class="container">
                 <p class="description w-75 mb-5 mx-auto">
@@ -28,40 +29,81 @@
         <p>{{ course.full_desc }}</p>
     </section>
 
-    <section class="program mb-5">
-        <h2 class="mb-3 text-center text-uppercase font-weight-bold">Программа курса</h2>
+    <section class="reviews mb-5">
+        <h2 class="mb-3 text-center text-uppercase font-weight-bold">Отзывы</h2>
 
-        {% for theme in course.themes %}
-            <div class="card mb-3">
-                <div class="card-header d-flex align-items-center">
-                    <h5 class="mb-0">Тема {{ loop.index }}. {{ theme.name }}</h5>
-                    {% if current_user.is_authenticated and current_user.id == course.author_id %}
-                        <button class="btn btn-primary btn-sm ms-auto" title="Добавить пункт" data-parent-id="{{ theme.id }}">+</button>
-                    {% endif %}
+        {% if not recent_reviews %}
+            <p class="text-center text-muted">Отзывов пока нет. Будьте первым!</p>
+        {% else %}
+            <div class="list-group mb-3">
+                {% for review in recent_reviews %}
+                <div class="list-group-item flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ review.user.full_name }}</h5>
+                        <small class="text-muted">{{ review.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                    </div>
+                    <div class="mb-1">
+                        <span class="text-warning">
+                            {% for i in range(review.rating) %}★{% endfor %}
+                            {% for i in range(5 - review.rating) %}☆{% endfor %}
+                        </span>
+                    </div>
+                    <p class="mb-1">{{ review.text }}</p>
                 </div>
-                <div class="card-body">
-                    {% set outer_loop = loop %}
-                    {% for subtheme in theme.subthemes %}
-                        <div class="d-flex align-items-center">
-                            <p class="card-text mb-3">{{ outer_loop.index }}.{{ loop.index }}. {{ subtheme.name }}</p>
-                            {% if current_user.is_authenticated and current_user.id == course.author_id %}
-                            <a href="#" class="btn btn-sm ms-auto" title="Добавить материал"
-                                data-parent-id="{{ theme.id }}">+</a>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
+                {% endfor %}
             </div>
-        {% endfor %}
 
-        {% if current_user.is_authenticated and current_user.id == course.author_id %}
-            <div class="text-center">
-                <button type="button" class="btn btn-dark">
-                    Добавить тему
-                </button>
+            <div class="text-center mb-4">
+                <a href="{{ url_for('courses.reviews', course_id=course.id) }}" class="btn btn-outline-dark">Все отзывы</a>
             </div>
         {% endif %}
+
+        <!-- Форма добавления отзыва -->
+        {% if current_user.is_authenticated %}
+            <div class="card bg-light">
+                <div class="card-body">
+                    {% if user_review %}
+                        <!-- Если пользователь уже оставил отзыв -->
+                        <h5 class="card-title text-center">Ваш отзыв</h5>
+                        <div class="border rounded p-3 bg-white">
+                            <div class="d-flex w-100 justify-content-between">
+                                <strong>Оценка: {{ user_review.rating }} из 5</strong>
+                                <small class="text-muted">{{ user_review.created_at.strftime('%d.%m.%Y') }}</small>
+                            </div>
+                            <p class="mt-2 mb-0">{{ user_review.text }}</p>
+                        </div>
+                    {% else %}
+                        <!-- Форма -->
+                        <h5 class="card-title text-center">Оставить отзыв</h5>
+                        <form action="{{ url_for('courses.add_review', course_id=course.id) }}" method="POST">
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">Оценка</label>
+                                <select class="form-select" id="rating" name="rating" required>
+                                    <option value="5" selected>Отлично</option>
+                                    <option value="4">Хорошо</option>
+                                    <option value="3">Удовлетворительно</option>
+                                    <option value="2">Неудовлетворительно</option>
+                                    <option value="1">Плохо</option>
+                                    <option value="0">Ужасно</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="text" class="form-label">Текст отзыва</label>
+                                <textarea class="form-control" id="text" name="text" rows="3" required></textarea>
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">Отправить</button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                Чтобы оставить отзыв, пожалуйста, <a href="{{ url_for('auth.login', next=request.path) }}">войдите в систему</a>.
+            </div>
+        {% endif %}
+
     </section>
 </div>
-
 {% endblock %}
